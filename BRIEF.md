@@ -131,7 +131,7 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 3 | `POST /memory` | `feature/3-post-memory` | ✅ | `5de80df` |
 | 4 | `GET /memory/{id}` + `GET /memory/key/{key}` | `feature/4-get-memory` | ✅ | `c66d9cc` |
 | 5 | `PUT /memory/{key}` | `feature/5-put-memory` | ✅ | `0cd0662` |
-| 6 | `GET /memory/search` | `feature/6-search` | ❌ | — |
+| 6 | `GET /memory/search` | `feature/6-search` | ✅ | `ab61cda` |
 | 7 | `GET /memory/recent` | `feature/7-recent` | ❌ | — |
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ❌ | — |
 | 9 | `POST /embed` | `feature/9-embed` | ❌ | — |
