@@ -133,7 +133,7 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 5 | `PUT /memory/{key}` | `feature/5-put-memory` | ✅ | `0cd0662` |
 | 6 | `GET /memory/search` | `feature/6-search` | ✅ | `ab61cda` |
 | 7 | `GET /memory/recent` | `feature/7-recent` | ✅ | `d2faaa2` |
-| 8 | `DELETE /memory/{key}` | `feature/8-delete` | ❌ | — |
+| 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ❌ | — |
 | 10 | Dockerfile | `feature/10-docker` | ❌ | — |
 
