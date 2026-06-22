@@ -60,8 +60,7 @@ app = FastAPI(
 )
 
 
-# ── Routes will be registered here as features are implemented ──
-# from app.routers import health, memory, embed
-# app.include_router(health.router)
-# app.include_router(memory.router)
-# app.include_router(embed.router)
+# ── Routes ──
+from app.routers import health
+
+app.include_router(health.router)
