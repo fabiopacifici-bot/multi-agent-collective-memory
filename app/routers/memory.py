@@ -33,6 +33,34 @@ def _row_to_response(row) -> MemoryResponse:
     )
 
 
+@router.get("/{id:int}", response_model=MemoryResponse)
+async def get_memory_by_id(id: int):
+    """Retrieve a memory by its primary key ID."""
+    conn = get_connection()
+    try:
+        row = conn.execute("SELECT * FROM memories WHERE id = ?", (id,)).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memory not found")
+    return _row_to_response(row)
+
+
+@router.get("/key/{key}", response_model=MemoryResponse)
+async def get_memory_by_key(key: str):
+    """Retrieve a memory by its logical key."""
+    conn = get_connection()
+    try:
+        row = conn.execute("SELECT * FROM memories WHERE key = ?", (key,)).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memory not found")
+    return _row_to_response(row)
+
+
 @router.post("", response_model=MemoryResponse, status_code=status.HTTP_201_CREATED)
 async def create_memory(body: MemoryCreate):
     """Create a new memory with multimodal embedding.
