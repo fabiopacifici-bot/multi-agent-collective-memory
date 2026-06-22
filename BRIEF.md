@@ -127,7 +127,7 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | # | Feature | Branch | Status | Commit |
 |---|---------|--------|--------|--------|
 | 1 | Scheletro progetto + dipendenze + DB init | `feature/1-skeleton` | ✅ | `142f1ad` |
-| 2 | `GET /health` + servizio embedding | `feature/2-health-embed` | ❌ | — |
+| 2 | `GET /health` + servizio embedding | `feature/2-health-embed` | ✅ | `f1f77de` |
 | 3 | `POST /memory` | `feature/3-post-memory` | ❌ | — |
 | 4 | `GET /memory/{id}` + `GET /memory/key/{key}` | `feature/4-get-memory` | ❌ | — |
 | 5 | `PUT /memory/{key}` | `feature/5-put-memory` | ❌ | — |
@@ -136,4 +136,5 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ❌ | — |
 | 9 | `POST /embed` | `feature/9-embed` | ❌ | — |
 | 10 | Dockerfile | `feature/10-docker` | ❌ | — |
+
 - Dockerfile per containerizzazione
