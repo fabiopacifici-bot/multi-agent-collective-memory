@@ -61,6 +61,7 @@ app = FastAPI(
 
 
 # ── Routes ──
-from app.routers import health
+from app.routers import health, memory
 
 app.include_router(health.router)
+app.include_router(memory.router)
