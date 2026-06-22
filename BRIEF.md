@@ -135,6 +135,6 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 7 | `GET /memory/recent` | `feature/7-recent` | ✅ | `d2faaa2` |
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ✅ | `50e14bd` |
-| 10 | Dockerfile | `feature/10-docker` | ❌ | — |
+| 10 | Dockerfile | `feature/10-docker` | ✅ | `7fad4d7` |
 
 - Dockerfile per containerizzazione
