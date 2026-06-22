@@ -4,11 +4,11 @@
 ## Il codice fa quello che ho chiesto?
 
 [sì / parzialmente / no — spiegare perché]
-Si database sqlite
+Si database sqlite, API REST, embedding multimodale, ricerca semantica, Dockerfile *in progress*.
 
 ## L'agente ha rispettato lo stack?
 
-[sì / parzialmente / no — quali scelte ha fatto diversamente?]
+Si, ancora in progress da valutare a fine sessione cosa e' stato rispettato e cosa no.
 
 ## Cosa non era chiaro nel brief?
 
