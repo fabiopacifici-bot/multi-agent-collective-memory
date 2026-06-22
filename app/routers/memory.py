@@ -41,6 +41,39 @@ def _cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b) / denom)
 
 
+@router.get("/recent", response_model=list[MemoryResponse])
+async def get_recent_memories(
+    limit: int = Query(10, ge=1, le=200, description="Number of most recent memories"),
+    agent: str | None = Query(None, description="Optional agent filter"),
+):
+    """Return the most recent memories, optionally filtered by agent."""
+    conn = get_connection()
+    try:
+        if agent:
+            rows = conn.execute(
+                """
+                SELECT * FROM memories
+                WHERE agent = ?
+                ORDER BY datetime(created_at) DESC, id DESC
+                LIMIT ?
+                """,
+                (agent, limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """
+                SELECT * FROM memories
+                ORDER BY datetime(created_at) DESC, id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+    finally:
+        conn.close()
+
+    return [_row_to_response(row) for row in rows]
+
+
 @router.get("/{id:int}", response_model=MemoryResponse)
 async def get_memory_by_id(id: int):
     """Retrieve a memory by its primary key ID."""
