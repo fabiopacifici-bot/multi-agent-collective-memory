@@ -6,12 +6,13 @@ from __future__ import annotations
 
 import json
 import logging
+import numpy as np
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.database import get_connection
 from app.main import get_embedder, write_lock
-from app.models import MemoryCreate, MemoryResponse, MemoryUpdate
+from app.models import MemoryCreate, MemoryResponse, MemoryUpdate, SearchResult
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,14 @@ def _row_to_response(row) -> MemoryResponse:
         created_at=row["created_at"],
         updated_at=row["updated_at"],
     )
+
+
+def _cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute cosine similarity between two vectors."""
+    denom = float(np.linalg.norm(a) * np.linalg.norm(b))
+    if denom <= 1e-12:
+        return 0.0
+    return float(np.dot(a, b) / denom)
 
 
 @router.get("/{id:int}", response_model=MemoryResponse)
@@ -162,3 +171,49 @@ async def update_memory(key: str, body: MemoryUpdate):
 
     logger.info("Memory updated: key=%s id=%d", key, row["id"])
     return _row_to_response(row)
+
+
+@router.get("/search", response_model=list[SearchResult])
+async def search_memories(
+    q: str = Query(..., min_length=1, description="Semantic query text"),
+    top_k: int = Query(5, ge=1, le=100, description="Maximum results to return"),
+):
+    """Search memories by semantic similarity against query text."""
+    embedder = get_embedder()
+    query_embedding = await embedder.embed(text=q, images=None)
+
+    conn = get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM memories WHERE embedding IS NOT NULL"
+        ).fetchall()
+    finally:
+        conn.close()
+
+    ranked: list[SearchResult] = []
+    for row in rows:
+        raw = row["embedding"]
+        if raw is None:
+            continue
+
+        emb = np.frombuffer(raw, dtype=np.float32)
+        if emb.size == 0 or emb.shape != query_embedding.shape:
+            continue
+
+        score = _cosine_similarity(query_embedding, emb)
+        ranked.append(
+            SearchResult(
+                id=row["id"],
+                agent=row["agent"],
+                key=row["key"],
+                content_text=row["content_text"],
+                content_images=json.loads(row["content_images"]),
+                metadata=json.loads(row["metadata"]),
+                score=score,
+                created_at=row["created_at"],
+                updated_at=row["updated_at"],
+            )
+        )
+
+    ranked.sort(key=lambda item: item.score, reverse=True)
+    return ranked[:top_k]
