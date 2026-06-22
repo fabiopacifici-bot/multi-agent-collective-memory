@@ -6,13 +6,12 @@ from __future__ import annotations
 
 import json
 import logging
-import numpy as np
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.database import get_connection
 from app.main import get_embedder, write_lock
-from app.models import MemoryCreate, MemoryResponse
+from app.models import MemoryCreate, MemoryResponse, MemoryUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -107,4 +106,59 @@ async def create_memory(body: MemoryCreate):
             conn.close()
 
     logger.info("Memory created: agent=%s key=%s id=%d", body.agent, body.key, row["id"])
+    return _row_to_response(row)
+
+
+@router.put("/{key}", response_model=MemoryResponse)
+async def update_memory(key: str, body: MemoryUpdate):
+    """Update an existing memory by logical key and regenerate its embedding."""
+    embedder = get_embedder()
+
+    # Regenerate embedding from the updated multimodal content.
+    embedding = await embedder.embed(
+        text=body.content.text,
+        images=body.content.images if body.content.images else None,
+    )
+
+    async with write_lock:
+        conn = get_connection()
+        try:
+            existing = conn.execute(
+                "SELECT * FROM memories WHERE key = ?", (key,)
+            ).fetchone()
+            if existing is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Memory not found",
+                )
+
+            metadata_value = json.dumps(body.metadata) if body.metadata is not None else existing["metadata"]
+
+            conn.execute(
+                """
+                UPDATE memories
+                SET content_text = ?,
+                    content_images = ?,
+                    embedding = ?,
+                    metadata = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE key = ?
+                """,
+                (
+                    body.content.text,
+                    json.dumps(body.content.images),
+                    embedding.tobytes(),
+                    metadata_value,
+                    key,
+                ),
+            )
+            conn.commit()
+
+            row = conn.execute(
+                "SELECT * FROM memories WHERE key = ?", (key,)
+            ).fetchone()
+        finally:
+            conn.close()
+
+    logger.info("Memory updated: key=%s id=%d", key, row["id"])
     return _row_to_response(row)
