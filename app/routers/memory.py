@@ -250,3 +250,27 @@ async def search_memories(
 
     ranked.sort(key=lambda item: item.score, reverse=True)
     return ranked[:top_k]
+
+
+@router.delete("/{key}")
+async def delete_memory(key: str):
+    """Delete a memory by logical key."""
+    async with write_lock:
+        conn = get_connection()
+        try:
+            existing = conn.execute(
+                "SELECT id FROM memories WHERE key = ?", (key,)
+            ).fetchone()
+            if existing is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Memory not found",
+                )
+
+            conn.execute("DELETE FROM memories WHERE key = ?", (key,))
+            conn.commit()
+        finally:
+            conn.close()
+
+    logger.info("Memory deleted: key=%s", key)
+    return {"deleted": True, "key": key}
