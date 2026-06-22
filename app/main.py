@@ -61,7 +61,8 @@ app = FastAPI(
 
 
 # ── Routes ──
-from app.routers import health, memory
+from app.routers import embed, health, memory
 
 app.include_router(health.router)
 app.include_router(memory.router)
+app.include_router(embed.router)
