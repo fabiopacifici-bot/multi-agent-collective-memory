@@ -126,7 +126,7 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 
 | # | Feature | Branch | Status | Commit |
 |---|---------|--------|--------|--------|
-| 1 | Scheletro progetto + dipendenze + DB init | `feature/1-skeleton` | ❌ | — |
+| 1 | Scheletro progetto + dipendenze + DB init | `feature/1-skeleton` | ✅ | `142f1ad` |
 | 2 | `GET /health` + servizio embedding | `feature/2-health-embed` | ❌ | — |
 | 3 | `POST /memory` | `feature/3-post-memory` | ❌ | — |
 | 4 | `GET /memory/{id}` + `GET /memory/key/{key}` | `feature/4-get-memory` | ❌ | — |
