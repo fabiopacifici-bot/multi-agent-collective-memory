@@ -14,7 +14,7 @@ def setup_db():
     """Initialize a fresh in-memory database before each test."""
     init_db()
     conn = get_connection()
-    conn.executescript("DELETE FROM memories;")
+    conn.executescript("DELETE FROM memories; DELETE FROM sqlite_sequence WHERE name='memories';")
     conn.execute(
         """
         INSERT INTO memories (agent, key, content_text, content_images, embedding, metadata)
