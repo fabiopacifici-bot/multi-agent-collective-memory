@@ -9,32 +9,12 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.database import get_connection, init_db
-import app.main as main_mod
 from app.main import app
-
-
-class DummyEmbedder:
-    """Test embedder returning deterministic vectors for query text."""
-
-    async def embed(self, text: str = "", images=None):
-        if text == "alpha":
-            return np.array([1.0, 0.0, 0.0], dtype=np.float32)
-        if text == "beta":
-            return np.array([0.0, 1.0, 0.0], dtype=np.float32)
-        return np.array([0.0, 0.0, 1.0], dtype=np.float32)
-
-    @property
-    def is_loaded(self) -> bool:
-        return True
-
-    @property
-    def device_name(self) -> str:
-        return "cpu"
 
 
 @pytest.fixture(autouse=True)
 def setup_env():
-    """Seed DB and patch global embedder used by get_embedder()."""
+    """Seed DB records for search tests."""
     init_db()
     conn = get_connection()
     conn.executescript("DELETE FROM memories;")
@@ -55,9 +35,7 @@ def setup_env():
     conn.commit()
     conn.close()
 
-    main_mod.embedding_service = DummyEmbedder()
     yield
-    main_mod.embedding_service = None
 
 
 @pytest.fixture
