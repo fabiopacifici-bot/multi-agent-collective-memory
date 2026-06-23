@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
     await embedder.load()
     embedding_service = embedder
 
-    logger.info("Service ready on 0.0.0.0:8000")
+    logger.info("Service ready on 0.0.0.0:8010")
     yield
 
     # Shutdown

@@ -44,16 +44,16 @@ Swagger UI is available at `/docs` once running.
 pip install -r requirements.txt
 ```
 
-3. Run the service:
+1. Run the service:
 
 ```bash
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8010
 ```
 
-4. Open:
+1. Open:
 
-- `http://localhost:8000/docs`
-- `http://localhost:8000/health`
+- `http://localhost:8010/docs`
+- `http://localhost:8010/health`
 
 ## Docker Run
 

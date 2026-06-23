@@ -77,9 +77,9 @@ Multimodal RAG shared memory over the network, with memory management and retrie
 
 ## Esposizione su rete
 
-- Server bind su `0.0.0.0:8000`
-- Container Docker EXPOSE 8000
-- Agenti sulla stessa rete Docker (o host) possono chiamare `http://<host>:8000/memory/...`
+- Server bind su `0.0.0.0:8010`
+- Container Docker EXPOSE 8010
+- Agenti sulla stessa rete Docker (o host) possono chiamare `http://<host>:8010/memory/...`
 
 ### Docker & GPU CUDA
 
@@ -91,7 +91,7 @@ FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 Per eseguire con GPU:
 
 ```bash
-docker run --gpus all -p 8000:8000 ...
+docker run --gpus all -p 8010:8010 ...
 ```
 
 Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
