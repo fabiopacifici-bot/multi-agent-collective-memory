@@ -1,0 +1,18 @@
+graph TD
+  Agents["🤖 Multi-Agent Clients\nproducer/consumer over HTTP"]
+  API["🌐 FastAPI Service\nREST routes, validation, OpenAPI"]
+  Lock["🔒 Concurrency Control\nasyncio.Lock on writes"]
+  Embed["🧠 Embedding Service\nQwen3-VL-Embedding-2B"]
+  Search["🔎 Semantic Search\ncosine similarity in-memory"]
+  DB["🗄 SQLite (WAL)\nmemories persistence"]
+  Docker["📦 Docker Runtime\ncontainerized deployment"]
+
+  Agents -->|POST/PUT/GET/DELETE /memory\nGET /memory/search\nPOST /embed| API
+  API --> Lock
+  Lock -->|serialize writes| DB
+  API -->|concurrent reads| DB
+  API -->|embed query/content| Embed
+  Embed -->|1024-d vectors| Search
+  Search -->|top-k ids/scores| API
+  DB -->|stored embeddings| Search
+  Docker --> API
