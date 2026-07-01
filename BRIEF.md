@@ -136,5 +136,22 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ✅ | `50e14bd` |
 | 10 | Dockerfile | `feature/10-docker` | ✅ | `7fad4d7` |
+| 11 | Management scripts (search, API client, index, curator) | `feat/curator-scripts` | ✅ | `eb14977` |
 
-- Dockerfile per containerizzazione
+## Management Scripts
+
+Client scripts are in `scripts/` for use alongside the service:
+
+| Script | Purpose |
+|--------|---------|
+| `search.py` | Semantic search against local file entries |
+| `memory_api.py` | Python client + CLI for the REST API |
+| `index.py` | Embed local markdown entries into search index |
+| `curator/validate.py` | Validate entry frontmatter |
+| `curator/dedup.py` | Check for duplicate entries |
+| `curator/sweep.py` | Weekly cleanup (draft/plausible expiry) |
+| `curator/reindex.py` | Rebuild index.md from entries |
+| `curator/sign.py` | Add provenance signature to an entry |
+| `curator/verify.py` | Verify entry signature |
+
+These scripts operate on the **entries/ directory** at `workspace/collective-memory/entries/` (not part of this repo). The local entries store is in the main workspace; this repo provides the network API and tooling.
