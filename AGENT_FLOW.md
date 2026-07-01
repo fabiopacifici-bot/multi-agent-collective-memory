@@ -1,7 +1,7 @@
 # Agent Development Workflow
 
-1. Issue Creation — creare una GitHub issue per ogni task
-2. Branching: main → dev → issue-X (dove X è il numero dell'issue)
+1. Issue Creation — create a GitHub issue for each task
+2. Branching: main → dev → issue-X (where X is the issue number)
 3. Development: commit frequenti, messaggi chiari
 4. Validation: testare prima di fare merge
 5. Final merge: dev → main dopo review

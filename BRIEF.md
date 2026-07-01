@@ -2,11 +2,11 @@
 
 A tiny web service with REST API to store and retrieve shared information among agents in a multi-agent system. The service will be designed to be lightweight and efficient, allowing agents to quickly access and update shared data as needed.
 
-## Obiettivo
+## Objective
 
 Multimodal RAG shared memory over the network, with memory management and retrieval capabilities, to enable collaboration and coordination among agents in a multi-agent system.
 
-## Stack scelto
+## Tech Stack
 
 - Python 3.11+
 - FastAPI
@@ -16,42 +16,42 @@ Multimodal RAG shared memory over the network, with memory management and retrie
 
 ## Embedding Model: Qwen3-VL-Embedding-2B
 
-- **Modello**: [Qwen/Qwen3-VL-Embedding-2B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B)
-- **Tipo**: Multimodal (testo + immagini + video)
-- **Parametri**: 2B
-- **Dimensione embeddings**: 1024 (configurabile 64–2048)
-- **Context length**: 32K token
-- **Hardware target**: GPU (CUDA) — inference in ~50ms su RTX 3060
-- **Fallback**: CPU (più lento, ~500ms)
-- **Dipendenze**: `transformers>=4.57.0`, `qwen-vl-utils>=0.0.14`, `torch>=2.0.0`, `numpy`, `Pillow`, `pydantic`
+- **Model**: [Qwen/Qwen3-VL-Embedding-2B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B)
+- **Type**: Multimodal (text + images + video)
+- **Parameters**: 2B
+- **Embedding dimensions**: 1024 (configurable 64–2048)
+- **Context length**: 32K tokenss
+- **Hardware target**: GPU (CUDA) — inference ~50ms on RTX 3060
+- **Fallback**: CPU (slower, ~500ms)
+- **Dependencies**: `transformers>=4.57.0`, `qwen-vl-utils>=0.0.14`, `torch>=2.0.0`, `numpy`, `Pillow`, `pydantic`
 
-### Input supportati
+### Supported Inputs
 
-- **Testo**: inviato come stringa JSON
-- **Immagini**: codificate in **Base64** inline nel body JSON (no upload files)
-- **Multi-modalità**: una singola richiesta può contenere testo + immagini — il modello produce un unico embedding congiunto
+- **Text**: sent as JSON string
+- **Images**: encoded as **Base64** inline in the JSON body (no file upload)
+- **Multi-modal**: a single request can contain text + images — the model produces a single joint embedding
 
-## Architettura del database (SQLite)
+## Database Architecture (SQLite)
 
-### Tabella `memories`
+### `memories` table
 
-| Colonna | Tipo | Note |
-|---------|------|------|
+| Column | Type | Notes |
+|--------|------|-------|
 | id | INTEGER | PK, auto-increment |
-| agent | TEXT | NOT NULL, indicizzato per lookup |
-| key | TEXT | UNIQUE, chiave logica del record |
-| content_text | TEXT | Contenuto testuale della memoria |
-| content_images | TEXT | JSON array di immagini in Base64 (opzionale) |
-| embedding | BLOB | Vettore di 1024 float32 (~4KB) |
-| metadata | TEXT | JSON con metadati arbitrari |
-| created_at | TIMESTAMP | Auto-impostato |
-| updated_at | TIMESTAMP | Aggiornato su PUT |
+| agent | TEXT | NOT NULL, indexed for lookup |
+| key | TEXT | UNIQUE, logical key for the record |
+| content_text | TEXT | Text content of the memory |
+| content_images | TEXT | JSON array of Base64 images (optional) |
+| embedding | BLOB | Vector of 1024 float32 (~4KB) |
+| metadata | TEXT | JSON with arbitrary metadata |
+| created_at | TIMESTAMP | Auto-set |
+| updated_at | TIMESTAMP | Updated on PUT |
 
-### Indice semantico
+### Semantic Index
 
-- Similarità via **cosine similarity** calcolata in-memory
-- Embedding deserializzati da BLOB a `numpy.ndarray`
-- Per dataset grandi (>10K records): possibile introdurre FAISS in futuro
+- Similarity via **cosine similarity** computed in-memory
+- Embeddings deserialized from BLOB to `numpy.ndarray`
+- For large datasets (>10K records): possible FAISS integration later
 
 ## API REST
 
@@ -65,60 +65,60 @@ Multimodal RAG shared memory over the network, with memory management and retrie
 | GET | `/memory/search` | Ricerca semantica — embedding della query, top-K per cosine similarity. Param: `?q=...&top_k=5` |
 | GET | `/memory/key/{key}` | Recupera una memoria per chiave esatta |
 | GET | `/memory/recent` | Ultime N memorie. Param: `?limit=10&agent=millie` (filtro opzionale per agente) |
-| DELETE | `/memory/{key}` | Rimuove una memoria per chiave logica |
-| POST | `/embed` | Debug — embedding senza storage. Body: `{ "text": "...", "images": ["base64..."] }` → `{ "embedding": [...], "dim": 1024 }` |
-| GET | `/health` | Health check — verifica caricamento modello |
+| DELETE | `/memory/{key}` | Delete memory by logical key |
+| POST | `/embed` | Debug — embed without storage. Body: `{ "text": "...", "images": ["base64..."] }` → `{ "embedding": [...], "dim": 1024 }` |
+| GET | `/health` | Health check — verify model loaded |
 
-### Concorrenza
+### Concurrency
 
-- **Scritture** (`POST`, `PUT`, `DELETE`): protette da `asyncio.Lock` — una per volta
-- **Letture** (`GET`): completamente concorrenti (no lock)
+- **Writes** (`POST`, `PUT`, `DELETE`): protected by `asyncio.Lock` — one at a time
+- **Reads** (`GET`): fully concurrent (no lock)
 - **Embedding**: unico modello caricato in memoria all'avvio (`lifespan` event di FastAPI)
 
-## Esposizione su rete
+## Network Exposure
 
-- Server bind su `0.0.0.0:8010`
+- Server binds to `0.0.0.0:8010`
 - Container Docker EXPOSE 8010
-- Agenti sulla stessa rete Docker (o host) possono chiamare `http://<host>:8010/memory/...`
+- Agents on the same Docker network (or host) can call `http://<host>:8010/memory/...`
 
 ### Docker & GPU CUDA
 
 ```dockerfile
 FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
-# Alternativa CPU-only: python:3.11-slim
+# CPU-only alternative: python:3.11-slim
 ```
 
-Per eseguire con GPU:
+To run with GPU:
 
 ```bash
 docker run --gpus all -p 8010:8010 ...
 ```
 
-Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
+If no GPU is available, the model falls back to CPU automatically.
 
-## Componenti principali
+## Components
 
-1. API REST per la gestione della memoria condivisa
-2. Modello multimodale Qwen3-VL-Embedding-2B per embeddings
-3. Ricerca semantica per similarità (cosine similarity)
-4. SQLite per persistenza (letture concorrenti, scritture seriali)
-5. Docker per containerizzazione e esposizione su rete
+1. REST API for shared memory management
+2. Multimodal model Qwen3-VL-Embedding-2B for embeddings
+3. Semantic search via cosine similarity
+4. SQLite for persistence (concurrent reads, serial writes)
+5. Docker for containerization and network exposure
 
-## Vincoli
+## Constraints
 
 - No authentication
 - Sharable over the network (bind 0.0.0.0)
 - Lightweight and efficient
-- GPU opzionale (fallback CPU)
-- Immagini in Base64 inline (no file storage)
+- GPU optional (CPU fallback)
+- Images as Base64 inline (no file storage)
 
-## Output atteso
+## Expected Output
 
-- API REST documentata (Swagger/OpenAPI via FastAPI)
-- Ricerca semantica multimodale (testo + immagini)
-- CRUD completo su memoria condivisa
-- Test unitari e di integrazione
-- Dockerfile per containerizzazione
+- Documented REST API (Swagger/OpenAPI via FastAPI)
+- Multimodal semantic search (text + images)
+- Full CRUD on shared memory
+- Unit and integration tests
+- Dockerfile for containerization
 
 ---
 
