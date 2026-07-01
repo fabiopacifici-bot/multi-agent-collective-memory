@@ -136,8 +136,7 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ✅ | `50e14bd` |
 | 10 | Dockerfile | `feature/10-docker` | ✅ | `7fad4d7` |
-| 11 | Curator + Client skills (shipped with service) | `feat/curator-scripts` | ✅ | `49b58da` |
-
+| 11 | Curator + Client skills (shipped with service) | `feat/curator-scripts` | ✅ | `c040599` |
 
 ## Shipped Skills
 
