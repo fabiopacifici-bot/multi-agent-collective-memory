@@ -136,11 +136,25 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ✅ | `50e14bd` |
 | 10 | Dockerfile | `feature/10-docker` | ✅ | `7fad4d7` |
-| 11 | Curator skill (memory hygiene companion) | `feat/curator-scripts` | ✅ | `49b58da` |
+| 11 | Curator + Client skills (shipped with service) | `feat/curator-scripts` | ✅ | `49b58da` |
 
-## Curator Skill (shipped with the service)
 
-The repo ships a self-contained skill at `skills/collective-memory-curator/` for memory hygiene — validation, dedup, cleanup sweeps, and provenance tracking:
+## Shipped Skills
+
+The repo ships two self-contained skills under `skills/`:
+
+### collective-memory-client
+
+Client skill for any agent to read/write/search the API:
+
+| File | Purpose |
+|------|---------|
+| `SKILL.md` | Skill definition, commands, usage |
+| `scripts/memory_api.py` | Python client + CLI wrapper |
+
+### collective-memory-curator
+
+Memory hygiene companion:
 
 | File | Purpose |
 |------|---------|
@@ -152,4 +166,4 @@ The repo ships a self-contained skill at `skills/collective-memory-curator/` for
 | `scripts/sign.py` | Provenance signature stamp |
 | `scripts/verify.py` | Verify signature |
 
-Install: clone repo into any agent workspace, then run `openclaw skills check` to register.
+Install: clone repo into any agent workspace, run `openclaw skills check` to register.
