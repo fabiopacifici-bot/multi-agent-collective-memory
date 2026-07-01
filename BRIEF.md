@@ -136,22 +136,20 @@ Se GPU non disponibile, il modello fa automaticamente fallback su CPU.
 | 8 | `DELETE /memory/{key}` | `feature/8-delete` | ✅ | `82e9174` |
 | 9 | `POST /embed` | `feature/9-embed` | ✅ | `50e14bd` |
 | 10 | Dockerfile | `feature/10-docker` | ✅ | `7fad4d7` |
-| 11 | Management scripts (search, API client, index, curator) | `feat/curator-scripts` | ✅ | `eb14977` |
+| 11 | Curator skill (memory hygiene companion) | `feat/curator-scripts` | ✅ | `49b58da` |
 
-## Management Scripts
+## Curator Skill (shipped with the service)
 
-Client scripts are in `scripts/` for use alongside the service:
+The repo ships a self-contained skill at `skills/collective-memory-curator/` for memory hygiene — validation, dedup, cleanup sweeps, and provenance tracking:
 
-| Script | Purpose |
-|--------|---------|
-| `search.py` | Semantic search against local file entries |
-| `memory_api.py` | Python client + CLI for the REST API |
-| `index.py` | Embed local markdown entries into search index |
-| `curator/validate.py` | Validate entry frontmatter |
-| `curator/dedup.py` | Check for duplicate entries |
-| `curator/sweep.py` | Weekly cleanup (draft/plausible expiry) |
-| `curator/reindex.py` | Rebuild index.md from entries |
-| `curator/sign.py` | Add provenance signature to an entry |
-| `curator/verify.py` | Verify entry signature |
+| File | Purpose |
+|------|---------|
+| `SKILL.md` | Skill definition, commands, usage |
+| `scripts/validate.py` | Validate entry schema |
+| `scripts/dedup.py` | Semantic dedup check |
+| `scripts/sweep.py` | Weekly cleanup sweep |
+| `scripts/reindex.py` | Rebuild index from entries |
+| `scripts/sign.py` | Provenance signature stamp |
+| `scripts/verify.py` | Verify signature |
 
-These scripts operate on the **entries/ directory** at `workspace/collective-memory/entries/` (not part of this repo). The local entries store is in the main workspace; this repo provides the network API and tooling.
+Install: clone repo into any agent workspace, then run `openclaw skills check` to register.
